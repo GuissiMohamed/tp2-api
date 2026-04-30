@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouveau contact</title>
+</head>
+<body>
+    <h1>Créer un nouveau contact</h1>
+
+    <h2>Test avec un lien GET</h2>
+
+    <p>
+        Ce lien essaie d'appeler la création avec un GET.
+        Normalement, cela ne doit pas créer le contact car la création se fait en POST.
+    </p>
+
+    <a href="/carnet/Paul/111">Tester le lien GET /carnet/Paul/111</a>
+
+    <hr>
+
+    <h2>Formulaire de création en POST</h2>
+
+    <form id="formContact" method="post">
+        <label for="nom">Nom :</label>
+        <input type="text" id="nom" name="nom" required>
+
+        <br><br>
+
+        <label for="numero">Numéro :</label>
+        <input type="text" id="numero" name="numero" required>
+
+        <br><br>
+
+        <button type="submit">Créer le contact</button>
+    </form>
+
+    <script>
+        document.getElementById("formContact").addEventListener("submit", function(event) {
+            const nom = document.getElementById("nom").value;
+            const numero = document.getElementById("numero").value;
+
+            this.action = "/carnet/" + encodeURIComponent(nom) + "/" + encodeURIComponent(numero);
+        });
+    </script>
+</body>
+</html>
