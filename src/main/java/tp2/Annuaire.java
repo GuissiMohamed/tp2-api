@@ -9,11 +9,16 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Path("/carnet")
 public class Annuaire {
@@ -74,7 +79,8 @@ public class Annuaire {
         Contact contact = carnet.chercherContact(nom);
 
         if (contact == null) {
-throw new ContactNotFoundException();        }
+            throw new ContactNotFoundException();
+        }
 
         return Response.ok(contact).build();
     }
@@ -86,7 +92,8 @@ throw new ContactNotFoundException();        }
         Contact contact = carnet.chercherContact(nom);
 
         if (contact == null) {
-throw new ContactNotFoundException();        }
+            throw new ContactNotFoundException();
+        }
 
         return contact.getNumero();
     }
@@ -134,5 +141,64 @@ throw new ContactNotFoundException();        }
         }
 
         return "Contact " + nom + " inconnu";
+    }
+
+    @DELETE
+    @Path("/supp/{nom}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response supprimerContactAvecCookie(@PathParam("nom") String nom) {
+        boolean supprime = carnet.supprimerContact(nom);
+
+        if (!supprime) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Contact " + nom + " inconnu")
+                    .build();
+        }
+
+        NewCookie cookie = new NewCookie.Builder("dernierSupprime")
+                .value(nom)
+                .path("/")
+                .build();
+
+        return Response.ok("Contact " + nom + " supprimé")
+                .cookie(cookie)
+                .build();
+    }
+
+    @GET
+    @Path("/dernier")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String afficherDernierSupprime(@Context HttpHeaders headers) {
+        Map<String, Cookie> cookies = headers.getCookies();
+
+        Cookie cookie = cookies.get("dernierSupprime");
+
+        if (cookie == null) {
+            return "Aucun contact supprimé";
+        }
+
+        return "Dernier contact supprimé : " + cookie.getValue();
+    }
+
+    @GET
+    @Path("/listCookies")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String listerCookies(@Context HttpHeaders headers) {
+        Map<String, Cookie> cookies = headers.getCookies();
+
+        if (cookies.isEmpty()) {
+            return "Aucun cookie";
+        }
+
+        StringBuilder resultat = new StringBuilder();
+
+        for (Cookie cookie : cookies.values()) {
+            resultat.append(cookie.getName())
+                    .append(" = ")
+                    .append(cookie.getValue())
+                    .append("\n");
+        }
+
+        return resultat.toString();
     }
 }
