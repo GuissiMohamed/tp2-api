@@ -10,9 +10,18 @@ public class Carnet {
     public Carnet() {
         contacts = new ArrayList<>();
 
-        contacts.add(new Contact("Sophie", "123"));
-        contacts.add(new Contact("Ali", "456"));
-        contacts.add(new Contact("Marie", "789"));
+        Contact sophie = new Contact("Sophie", "123");
+        sophie.ajouterNumero("0612345678");
+
+        Contact ali = new Contact("Ali", "456");
+        ali.ajouterNumero("0699999999");
+
+        Contact marie = new Contact("Marie", "789");
+        marie.ajouterNumero("0677777777");
+
+        contacts.add(sophie);
+        contacts.add(ali);
+        contacts.add(marie);
     }
 
     public List<Contact> getContacts() {
@@ -51,7 +60,7 @@ public class Carnet {
             return false;
         }
 
-        contactExistant.setNumero(contact.getNumero());
+        contactExistant.setNumeros(contact.getNumeros());
         return true;
     }
 
@@ -82,5 +91,23 @@ public class Carnet {
         }
 
         return noms;
+    }
+
+    public String chercherNumeroParIndice(String nom, int indice) {
+        Contact contact = chercherContact(nom);
+
+        if (contact == null) {
+            return "Contact inconnu";
+        }
+
+        if (contact.getNumeros() == null || contact.getNumeros().isEmpty()) {
+            return "Aucun numéro";
+        }
+
+        if (indice < 0 || indice >= contact.getNumeros().size()) {
+            return "Indice inconnu";
+        }
+
+        return contact.getNumeros().get(indice);
     }
 }

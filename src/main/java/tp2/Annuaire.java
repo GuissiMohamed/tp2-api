@@ -201,4 +201,9 @@ public class Annuaire {
 
         return resultat.toString();
     }
+    @Path("/{nom}/{indice}")
+public Numero getNumero(@PathParam("nom") String nom,
+                         @PathParam("indice") int indice) {
+    return new Numero(carnet, nom, indice);
+}
 }
