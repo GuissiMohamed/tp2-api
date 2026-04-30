@@ -74,8 +74,7 @@ public class Annuaire {
         Contact contact = carnet.chercherContact(nom);
 
         if (contact == null) {
-            throw new ContactNotFoundPlainException();
-        }
+throw new ContactNotFoundException();        }
 
         return Response.ok(contact).build();
     }
@@ -87,8 +86,7 @@ public class Annuaire {
         Contact contact = carnet.chercherContact(nom);
 
         if (contact == null) {
-            throw new ContactNotFoundPlainException();
-        }
+throw new ContactNotFoundException();        }
 
         return contact.getNumero();
     }
