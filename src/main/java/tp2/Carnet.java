@@ -1,0 +1,21 @@
+package tp2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Carnet {
+
+    private List<Contact> contacts;
+
+    public Carnet() {
+        contacts = new ArrayList<>();
+
+        contacts.add(new Contact("Sophie", "123"));
+        contacts.add(new Contact("Ali", "456"));
+        contacts.add(new Contact("Marie", "789"));
+    }
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+}
