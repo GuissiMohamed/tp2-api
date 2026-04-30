@@ -2,6 +2,7 @@ package tp2;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
@@ -24,5 +25,18 @@ public class Annuaire {
         }
 
         return resultat.toString();
+    }
+
+    @GET
+    @Path("/{nom}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String trouverNumero(@PathParam("nom") String nom) {
+        Contact contact = carnet.chercherContact(nom);
+
+        if (contact == null) {
+            return "Inconnu";
+        }
+
+        return contact.getNumero();
     }
 }

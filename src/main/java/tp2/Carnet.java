@@ -18,4 +18,14 @@ public class Carnet {
     public List<Contact> getContacts() {
         return contacts;
     }
+
+    public Contact chercherContact(String nom) {
+        for (Contact contact : contacts) {
+            if (contact.getNom().equalsIgnoreCase(nom)) {
+                return contact;
+            }
+        }
+
+        return null;
+    }
 }
