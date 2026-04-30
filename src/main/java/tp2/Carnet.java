@@ -65,4 +65,15 @@ public class Carnet {
         contactExistant.setNumero(contact.getNumero());
         return true;
     }
+
+    public boolean supprimerContact(String nom) {
+        Contact contactExistant = chercherContact(nom);
+
+        if (contactExistant == null) {
+            return false;
+        }
+
+        contacts.remove(contactExistant);
+        return true;
+    }
 }

@@ -1,6 +1,7 @@
 package tp2;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -94,5 +95,26 @@ public class Annuaire {
         }
 
         return Response.ok("Contact " + contact.getNom() + " modifié").build();
+    }
+
+    @DELETE
+    @Path("/{nom}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String supprimerContact(@PathParam("nom") String nom) {
+        boolean supprime = carnet.supprimerContact(nom);
+
+        if (supprime) {
+            return "Contact " + nom + " supprimé";
+        }
+
+        return "Contact " + nom + " inconnu";
+    }
+
+    @DELETE
+    @Path("/{nom}/{numero}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String supprimerContactAvecNumero(@PathParam("nom") String nom,
+                                             @PathParam("numero") String numero) {
+        return supprimerContact(nom);
     }
 }
