@@ -21,11 +21,22 @@ public class Carnet {
 
     public Contact chercherContact(String nom) {
         for (Contact contact : contacts) {
-            if (contact.getNom().equalsIgnoreCase(nom)) {
+            if (contact.getNom().equalsIgnoreCase(nom.trim())) {
                 return contact;
             }
         }
 
         return null;
+    }
+
+    public boolean ajouterContact(String nom, String numero) {
+        Contact contactExistant = chercherContact(nom);
+
+        if (contactExistant != null) {
+            return false;
+        }
+
+        contacts.add(new Contact(nom, numero));
+        return true;
     }
 }

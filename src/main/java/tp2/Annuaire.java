@@ -1,6 +1,7 @@
 package tp2;
 
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -38,5 +39,19 @@ public class Annuaire {
         }
 
         return contact.getNumero();
+    }
+
+    @POST
+    @Path("/{nom}/{numero}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String creerContact(@PathParam("nom") String nom,
+                               @PathParam("numero") String numero) {
+        boolean ajoute = carnet.ajouterContact(nom, numero);
+
+        if (ajoute) {
+            return "Contact " + nom + " créé";
+        }
+
+        return "Contact " + nom + " déjà existant";
     }
 }
