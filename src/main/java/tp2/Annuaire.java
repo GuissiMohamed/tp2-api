@@ -8,10 +8,12 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/carnet")
 public class Annuaire {
@@ -20,7 +22,23 @@ public class Annuaire {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String listerContactsTexte() {
+    public String listerContactsTexte(@QueryParam("lettre") String lettre) {
+        if (lettre != null) {
+            List<String> noms = carnet.nomsCommencantPar(lettre);
+
+            if (noms.isEmpty()) {
+                return "Aucun contact";
+            }
+
+            StringBuilder resultat = new StringBuilder();
+
+            for (String nom : noms) {
+                resultat.append(nom).append("\n");
+            }
+
+            return resultat.toString();
+        }
+
         if (carnet.getContacts().isEmpty()) {
             return "Liste vide";
         }
@@ -36,7 +54,12 @@ public class Annuaire {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response listerContacts() {
+    public Response listerContacts(@QueryParam("lettre") String lettre) {
+        if (lettre != null) {
+            List<String> noms = carnet.nomsCommencantPar(lettre);
+            return Response.ok(new ListeNoms(noms)).build();
+        }
+
         if (carnet.getContacts().isEmpty()) {
             return Response.noContent().build();
         }

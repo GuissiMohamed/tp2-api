@@ -65,4 +65,22 @@ public class Carnet {
         contacts.remove(contactExistant);
         return true;
     }
+
+    public List<String> nomsCommencantPar(String lettre) {
+        List<String> noms = new ArrayList<>();
+
+        if (lettre == null || lettre.isEmpty()) {
+            return noms;
+        }
+
+        String debut = lettre.trim().toLowerCase();
+
+        for (Contact contact : contacts) {
+            if (contact.getNom().toLowerCase().startsWith(debut)) {
+                noms.add(contact.getNom());
+            }
+        }
+
+        return noms;
+    }
 }
