@@ -3,6 +3,7 @@ package tp2;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -80,5 +81,18 @@ public class Annuaire {
         }
 
         return "Contact " + contact.getNom() + " déjà existant";
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response modifierContactXML(Contact contact) {
+        boolean modifie = carnet.modifierContact(contact);
+
+        if (!modifie) {
+            return Response.noContent().build();
+        }
+
+        return Response.ok("Contact " + contact.getNom() + " modifié").build();
     }
 }

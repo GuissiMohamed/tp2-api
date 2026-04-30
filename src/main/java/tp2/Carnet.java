@@ -50,4 +50,19 @@ public class Carnet {
         contacts.add(contact);
         return true;
     }
+
+    public boolean modifierContact(Contact contact) {
+        if (contacts.isEmpty()) {
+            return false;
+        }
+
+        Contact contactExistant = chercherContact(contact.getNom());
+
+        if (contactExistant == null) {
+            return false;
+        }
+
+        contactExistant.setNumero(contact.getNumero());
+        return true;
+    }
 }
