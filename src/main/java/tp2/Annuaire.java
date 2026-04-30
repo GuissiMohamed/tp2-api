@@ -8,113 +8,70 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
-
-import java.net.URI;
 
 @Path("/carnet")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class Annuaire {
 
     private static Carnet carnet = new Carnet();
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String listerContacts() {
+    public Response listerContacts() {
         if (carnet.getContacts().isEmpty()) {
-            return "Liste vide";
+            return Response.ok("Liste vide").build();
         }
 
-        StringBuilder resultat = new StringBuilder();
-
-        for (Contact contact : carnet.getContacts()) {
-            resultat.append(contact.toString()).append("\n");
-        }
-
-        return resultat.toString();
+        return Response.ok(carnet.getContacts()).build();
     }
 
     @GET
     @Path("/{nom}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String trouverNumero(@PathParam("nom") String nom) {
+    public Response trouverContact(@PathParam("nom") String nom) {
         Contact contact = carnet.chercherContact(nom);
 
         if (contact == null) {
-            return "Inconnu";
+            return Response.ok("Inconnu").build();
         }
 
-        return contact.getNumero();
+        return Response.ok(contact).build();
     }
 
     @POST
-    @Path("/{nom}/{numero}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response creerContact(@PathParam("nom") String nom,
-                                 @PathParam("numero") String numero,
-                                 @Context UriInfo uriInfo) {
-        boolean ajoute = carnet.ajouterContact(nom, numero);
-
-        if (ajoute) {
-            URI uri = uriInfo.getBaseUriBuilder()
-                    .path(Annuaire.class)
-                    .path(nom)
-                    .build();
-
-            return Response.created(uri)
-                    .entity(uri.toString())
-                    .build();
-        }
-
-        return Response.ok("Contact " + nom + " déjà existant").build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String creerContactXML(Contact contact) {
+    public Response creerContact(Contact contact) {
         boolean ajoute = carnet.ajouterContact(contact);
 
         if (ajoute) {
-            return "Contact " + contact.getNom() + " créé";
+            return Response.status(Response.Status.CREATED)
+                    .entity(contact)
+                    .build();
         }
 
-        return "Contact " + contact.getNom() + " déjà existant";
+        return Response.ok("Contact " + contact.getNom() + " déjà existant").build();
     }
 
     @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response modifierContactXML(Contact contact) {
+    public Response modifierContact(Contact contact) {
         boolean modifie = carnet.modifierContact(contact);
 
         if (!modifie) {
             return Response.noContent().build();
         }
 
-        return Response.ok("Contact " + contact.getNom() + " modifié").build();
+        return Response.ok(contact).build();
     }
 
     @DELETE
     @Path("/{nom}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String supprimerContact(@PathParam("nom") String nom) {
+    public Response supprimerContact(@PathParam("nom") String nom) {
         boolean supprime = carnet.supprimerContact(nom);
 
         if (supprime) {
-            return "Contact " + nom + " supprimé";
+            return Response.ok("Contact " + nom + " supprimé").build();
         }
 
-        return "Contact " + nom + " inconnu";
-    }
-
-    @DELETE
-    @Path("/{nom}/{numero}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String supprimerContactAvecNumero(@PathParam("nom") String nom,
-                                             @PathParam("numero") String numero) {
-        return supprimerContact(nom);
+        return Response.ok("Contact " + nom + " inconnu").build();
     }
 }

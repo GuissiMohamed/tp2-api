@@ -1,8 +1,5 @@
 package tp2;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class Contact {
 
     private String nom;

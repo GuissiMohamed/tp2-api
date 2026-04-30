@@ -29,17 +29,6 @@ public class Carnet {
         return null;
     }
 
-    public boolean ajouterContact(String nom, String numero) {
-        Contact contactExistant = chercherContact(nom);
-
-        if (contactExistant != null) {
-            return false;
-        }
-
-        contacts.add(new Contact(nom, numero));
-        return true;
-    }
-
     public boolean ajouterContact(Contact contact) {
         Contact contactExistant = chercherContact(contact.getNom());
 
