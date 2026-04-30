@@ -11,17 +11,34 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.net.URI;
+
 @Path("/carnet")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class Annuaire {
 
     private static Carnet carnet = new Carnet();
 
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String listerContactsTexte() {
+        if (carnet.getContacts().isEmpty()) {
+            return "Liste vide";
+        }
+
+        StringBuilder resultat = new StringBuilder();
+
+        for (Contact contact : carnet.getContacts()) {
+            resultat.append(contact.toString()).append("\n");
+        }
+
+        return resultat.toString();
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response listerContacts() {
         if (carnet.getContacts().isEmpty()) {
-            return Response.ok("Liste vide").build();
+            return Response.noContent().build();
         }
 
         return Response.ok(carnet.getContacts()).build();
@@ -29,30 +46,52 @@ public class Annuaire {
 
     @GET
     @Path("/{nom}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response trouverContact(@PathParam("nom") String nom) {
         Contact contact = carnet.chercherContact(nom);
 
         if (contact == null) {
-            return Response.ok("Inconnu").build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         return Response.ok(contact).build();
     }
 
+    @GET
+    @Path("/{nom}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String trouverNumero(@PathParam("nom") String nom) {
+        Contact contact = carnet.chercherContact(nom);
+
+        if (contact == null) {
+            return "Inconnu";
+        }
+
+        return contact.getNumero();
+    }
+
     @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response creerContact(Contact contact) {
         boolean ajoute = carnet.ajouterContact(contact);
 
         if (ajoute) {
-            return Response.status(Response.Status.CREATED)
+            URI uri = URI.create("/carnet/" + contact.getNom());
+
+            return Response.created(uri)
                     .entity(contact)
                     .build();
         }
 
-        return Response.ok("Contact " + contact.getNom() + " déjà existant").build();
+        return Response.status(Response.Status.CONFLICT)
+                .entity(contact)
+                .build();
     }
 
     @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response modifierContact(Contact contact) {
         boolean modifie = carnet.modifierContact(contact);
 
@@ -65,13 +104,14 @@ public class Annuaire {
 
     @DELETE
     @Path("/{nom}")
-    public Response supprimerContact(@PathParam("nom") String nom) {
+    @Produces(MediaType.TEXT_PLAIN)
+    public String supprimerContact(@PathParam("nom") String nom) {
         boolean supprime = carnet.supprimerContact(nom);
 
         if (supprime) {
-            return Response.ok("Contact " + nom + " supprimé").build();
+            return "Contact " + nom + " supprimé";
         }
 
-        return Response.ok("Contact " + nom + " inconnu").build();
+        return "Contact " + nom + " inconnu";
     }
 }
