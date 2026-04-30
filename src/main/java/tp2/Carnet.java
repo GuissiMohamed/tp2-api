@@ -39,4 +39,15 @@ public class Carnet {
         contacts.add(new Contact(nom, numero));
         return true;
     }
+
+    public boolean ajouterContact(Contact contact) {
+        Contact contactExistant = chercherContact(contact.getNom());
+
+        if (contactExistant != null) {
+            return false;
+        }
+
+        contacts.add(contact);
+        return true;
+    }
 }

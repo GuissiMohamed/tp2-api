@@ -1,5 +1,6 @@
 package tp2;
 
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -66,5 +67,18 @@ public class Annuaire {
         }
 
         return Response.ok("Contact " + nom + " déjà existant").build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String creerContactXML(Contact contact) {
+        boolean ajoute = carnet.ajouterContact(contact);
+
+        if (ajoute) {
+            return "Contact " + contact.getNom() + " créé";
+        }
+
+        return "Contact " + contact.getNom() + " déjà existant";
     }
 }
