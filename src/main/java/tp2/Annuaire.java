@@ -5,7 +5,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+
+import java.net.URI;
 
 @Path("/carnet")
 public class Annuaire {
@@ -44,14 +49,22 @@ public class Annuaire {
     @POST
     @Path("/{nom}/{numero}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String creerContact(@PathParam("nom") String nom,
-                               @PathParam("numero") String numero) {
+    public Response creerContact(@PathParam("nom") String nom,
+                                 @PathParam("numero") String numero,
+                                 @Context UriInfo uriInfo) {
         boolean ajoute = carnet.ajouterContact(nom, numero);
 
         if (ajoute) {
-            return "Contact " + nom + " créé";
+            URI uri = uriInfo.getBaseUriBuilder()
+                    .path(Annuaire.class)
+                    .path(nom)
+                    .build();
+
+            return Response.created(uri)
+                    .entity(uri.toString())
+                    .build();
         }
 
-        return "Contact " + nom + " déjà existant";
+        return Response.ok("Contact " + nom + " déjà existant").build();
     }
 }
